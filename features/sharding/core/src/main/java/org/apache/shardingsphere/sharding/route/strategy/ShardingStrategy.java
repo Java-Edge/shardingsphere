@@ -31,6 +31,7 @@ public interface ShardingStrategy {
     
     /**
      * Get sharding columns.
+     * 获取分片 Column
      * 
      * @return sharding columns
      */
@@ -45,6 +46,7 @@ public interface ShardingStrategy {
     
     /**
      * Sharding.
+     * 执行分片
      *
      * @param availableTargetNames available data source or table names
      * @param shardingConditionValues sharding condition values

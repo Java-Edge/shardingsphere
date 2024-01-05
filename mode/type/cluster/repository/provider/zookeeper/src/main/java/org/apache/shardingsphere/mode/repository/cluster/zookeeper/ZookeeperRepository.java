@@ -82,6 +82,7 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Inst
         int maxRetries = zookeeperProps.getValue(ZookeeperPropertyKey.MAX_RETRIES);
         int timeToLiveSeconds = zookeeperProps.getValue(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS);
         int operationTimeoutMilliseconds = zookeeperProps.getValue(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS);
+        // 构建 CuratorFrameworkFactory 并设置连接属性
         builder.connectString(config.getServerLists())
                 .ensembleTracker(false)
                 .retryPolicy(new ExponentialBackoffRetry(retryIntervalMilliseconds, maxRetries, retryIntervalMilliseconds * maxRetries))
@@ -93,6 +94,7 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Inst
             builder.connectionTimeoutMs(operationTimeoutMilliseconds);
         }
         String digest = zookeeperProps.getValue(ZookeeperPropertyKey.DIGEST);
+        // 设置安全摘要信息
         if (!Strings.isNullOrEmpty(digest)) {
             builder.authorization(ZookeeperPropertyKey.DIGEST.getKey(), digest.getBytes(StandardCharsets.UTF_8))
                     .aclProvider(new ACLProvider() {
@@ -147,6 +149,7 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Inst
             if (isExisted(key)) {
                 update(key, value);
             } else {
+                // 创建持久化节点
                 client.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(key, value.getBytes(StandardCharsets.UTF_8));
             }
             // CHECKSTYLE:OFF
@@ -159,6 +162,7 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Inst
     @Override
     public void update(final String key, final String value) {
         try {
+            // 在事务中更新数据
             client.setData().forPath(key, value.getBytes(StandardCharsets.UTF_8));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {

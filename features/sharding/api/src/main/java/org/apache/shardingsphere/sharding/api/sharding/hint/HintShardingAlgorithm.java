@@ -30,6 +30,7 @@ public interface HintShardingAlgorithm<T extends Comparable<?>> extends Sharding
     
     /**
      * Sharding.
+     * 根据 Hint 信息执行分片
      * 
      * <p>sharding value injected by hint, not in SQL.</p>
      *

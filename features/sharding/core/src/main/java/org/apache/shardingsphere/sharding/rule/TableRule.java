@@ -62,7 +62,10 @@ public final class TableRule {
     private static final char DEFAULT_PADDING_CHAR = '0';
     
     private final String logicTable;
-    
+
+    /**
+     * 代表真实的数据节点，由数据源名+表名组成，支持行表达式
+     */
     private final List<DataNode> actualDataNodes;
     
     @Getter(AccessLevel.NONE)
