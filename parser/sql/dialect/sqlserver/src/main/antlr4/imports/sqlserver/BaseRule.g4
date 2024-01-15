@@ -35,6 +35,7 @@ literals
 
 stringLiterals
     : STRING_
+    | NCHAR_TEXT
     ;
 
 numberLiterals
@@ -119,6 +120,7 @@ unreservedWord
     | DATA_RETENTION | TEMPORAL_HISTORY_RETENTION | EDITION | MIXED_PAGE_ALLOCATION | DISABLED | ALLOWED | HADR | MULTI_USER | RESTRICTED_USER | SINGLE_USER | OFFLINE | EMERGENCY | SUSPEND | DATE_CORRELATION_OPTIMIZATION
     | ELASTIC_POOL | SERVICE_OBJECTIVE | DATABASE_NAME | ALLOW_CONNECTIONS | GEO | NAMED | DATEFIRST | BACKUP_STORAGE_REDUNDANCY | FORCE_FAILOVER_ALLOW_DATA_LOSS | SECONDARY | FAILOVER | DEFAULT_FULLTEXT_LANGUAGE
     | DEFAULT_LANGUAGE | INLINE | NESTED_TRIGGERS | TRANSFORM_NOISE_WORDS | TWO_DIGIT_YEAR_CUTOFF | PERSISTENT_LOG_BUFFER | DIRECTORY_NAME | DATEFORMAT | DELAYED_DURABILITY | TRANSFER | SCHEMA | PASSWORD | AUTHORIZATION
+    | MEMBER | SEARCH | TEXT | SECOND | PRECISION | VIEWS | PROVIDER | COLUMNS | SUBSTRING | RETURNS | SIZE
     ;
 
 databaseName
@@ -150,7 +152,7 @@ sequenceName
     ;
 
 tableName
-    : (owner DOT_)? name
+    : (databaseName DOT_ (owner DOT_)? | (owner DOT_)?) name
     ;
 
 queueName
@@ -166,7 +168,11 @@ serviceName
     ;
 
 columnName
-    : (owner DOT_)? name
+    : (owner DOT_)? (name | scriptVariableName)
+    ;
+
+scriptVariableName
+    : DOLLAR_ LP_ name RP_
     ;
 
 owner
@@ -217,6 +223,7 @@ primaryKey
 expr
     : expr andOperator expr
     | expr orOperator expr
+    | expr distinctFrom expr
     | notOperator expr
     | LP_ expr RP_
     | booleanPrimary
@@ -228,6 +235,10 @@ andOperator
 
 orOperator
     : OR | OR_
+    ;
+
+distinctFrom
+    : IS NOT? DISTINCT FROM
     ;
 
 notOperator
@@ -300,11 +311,15 @@ distinct
     ;
 
 specialFunction
-    : castFunction  | charFunction
+    : castFunction  | charFunction | convertFunction
     ;
 
 castFunction
     : CAST LP_ expr AS dataType RP_
+    ;
+
+convertFunction
+    : CONVERT LP_ dataType COMMA_ expr (COMMA_ NUMBER_)? RP_
     ;
 
 charFunction
@@ -513,4 +528,26 @@ entityType
 
 ifExists
     : IF EXISTS
+    ;
+
+tableHintLimited
+    : KEEPIDENTITY
+    | KEEPDEFAULTS
+    | HOLDLOCK
+    | IGNORE_CONSTRAINTS
+    | IGNORE_TRIGGERS
+    | NOLOCK
+    | NOWAIT
+    | PAGLOCK
+    | READCOMMITTED
+    | READCOMMITTEDLOCK
+    | READPAST
+    | REPEATABLEREAD
+    | ROWLOCK
+    | SERIALIZABLE
+    | SNAPSHOT
+    | TABLOCK
+    | TABLOCKX
+    | UPDLOCK
+    | XLOCK
     ;

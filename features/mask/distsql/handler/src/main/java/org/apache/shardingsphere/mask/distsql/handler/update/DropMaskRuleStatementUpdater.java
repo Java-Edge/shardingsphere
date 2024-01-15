@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
+import org.apache.shardingsphere.distsql.handler.type.rdl.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
-import org.apache.shardingsphere.mask.distsql.parser.statement.DropMaskRuleStatement;
+import org.apache.shardingsphere.mask.distsql.statement.DropMaskRuleStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -77,7 +77,7 @@ public final class DropMaskRuleStatementUpdater implements RuleDefinitionDropUpd
     public boolean updateCurrentRuleConfiguration(final DropMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig) {
         sqlStatement.getTables().forEach(each -> dropRule(currentRuleConfig, each));
         dropUnusedAlgorithm(currentRuleConfig);
-        return currentRuleConfig.getTables().isEmpty();
+        return currentRuleConfig.isEmpty();
     }
     
     private void dropRule(final MaskRuleConfiguration currentRuleConfig, final String ruleName) {
@@ -89,7 +89,7 @@ public final class DropMaskRuleStatementUpdater implements RuleDefinitionDropUpd
         findUnusedAlgorithms(currentRuleConfig).forEach(each -> currentRuleConfig.getMaskAlgorithms().remove(each));
     }
     
-    private static Collection<String> findUnusedAlgorithms(final MaskRuleConfiguration currentRuleConfig) {
+    private Collection<String> findUnusedAlgorithms(final MaskRuleConfiguration currentRuleConfig) {
         Collection<String> inUsedAlgorithms = currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(MaskColumnRuleConfiguration::getMaskAlgorithm)
                 .collect(Collectors.toSet());
         return currentRuleConfig.getMaskAlgorithms().keySet().stream().filter(each -> !inUsedAlgorithms.contains(each)).collect(Collectors.toSet());
@@ -101,7 +101,7 @@ public final class DropMaskRuleStatementUpdater implements RuleDefinitionDropUpd
     }
     
     @Override
-    public String getType() {
-        return DropMaskRuleStatement.class.getName();
+    public Class<DropMaskRuleStatement> getType() {
+        return DropMaskRuleStatement.class;
     }
 }

@@ -81,6 +81,10 @@ public enum SQLVisitorRule {
     
     ALTER_OPERATOR("AlterOperator", SQLStatementType.DDL),
     
+    ALTER_PROFILE("AlterProfile", SQLStatementType.DDL),
+    
+    ALTER_ROLLBACK_SEGMENT("AlterRollbackSegment", SQLStatementType.DDL),
+    
     DROP_TABLE("DropTable", SQLStatementType.DDL),
     
     TRUNCATE_TABLE("TruncateTable", SQLStatementType.DDL),
@@ -521,6 +525,8 @@ public enum SQLVisitorRule {
     
     CREATE_CAST("CreateCast", SQLStatementType.DDL),
     
+    CREATE_CLUSTER("CreateCluster", SQLStatementType.DDL),
+    
     CREATE_TYPE("CreateType", SQLStatementType.DDL),
     
     DROP_CONVERSION("DropConversion", SQLStatementType.DDL),
@@ -609,6 +615,8 @@ public enum SQLVisitorRule {
     
     DROP_RESTORE_POINT("DropRestorePoint", SQLStatementType.DDL),
     
+    DROP_TABLE_SPACE("DropTableSpace", SQLStatementType.DDL),
+    
     ALTER_LIBRARY("AlterLibrary", SQLStatementType.DDL),
     
     ALTER_MATERIALIZED_ZONEMAP("AlterMaterializedZonemap", SQLStatementType.DDL),
@@ -659,6 +667,8 @@ public enum SQLVisitorRule {
     
     CREATE_MATERIALIZED_VIEW("CreateMaterializedView", SQLStatementType.DDL),
     
+    CREATE_MATERIALIZED_VIEW_LOG("CreateMaterializedViewLog", SQLStatementType.DDL),
+    
     CREATE_OPERATOR("CreateOperator", SQLStatementType.DDL),
     
     CREATE_POLICY("CreatePolicy", SQLStatementType.DDL),
@@ -681,7 +691,21 @@ public enum SQLVisitorRule {
     
     DROP_CONTEXT("DropContext", SQLStatementType.DDL),
     
-    EMPTY_STATEMENT("EmptyStatement", SQLStatementType.DAL);
+    SYSTEM_ACTION("SystemAction", SQLStatementType.DDL),
+    
+    EMPTY_STATEMENT("EmptyStatement", SQLStatementType.DAL),
+    
+    CREATE_JAVA("CreateJava", SQLStatementType.DDL),
+    
+    PLSQL_BLOCK("PlsqlBlock", SQLStatementType.DDL),
+    
+    CREATE_LIBRARY("CreateLibrary", SQLStatementType.DDL),
+    
+    SWITCH("Switch", SQLStatementType.DDL),
+    
+    CREATE_PROFILE("CreateProfile", SQLStatementType.DDL),
+    
+    UPDATE_STATISTICS("UpdateStatistics", SQLStatementType.DDL);
     
     private final String name;
     

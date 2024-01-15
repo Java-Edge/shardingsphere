@@ -29,6 +29,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.generic.ExpectedDataType;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.aggregation.ExpectedAggregationProjection;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.expression.ExpectedExpressionProjection;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.xmlquery.ExpectedXmlQueryAndExistsFunctionSegment;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -104,4 +105,22 @@ public final class ExpectedExpression extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "match-expression")
     private ExpectedMatchExpression matchExpression;
+    
+    @XmlElement(name = "outer-join-expression")
+    private ExpectedOuterJoinExpression outerJoinExpression;
+    
+    @XmlElement(name = "interval-expression")
+    private ExpectedIntervalExpression intervalExpression;
+    
+    @XmlElement(name = "multiset-expression")
+    private ExpectedMultisetExpression multisetExpression;
+    
+    @XmlElement(name = "row-expression")
+    private ExpectedRowExpression rowExpression;
+    
+    @XmlElement(name = "unary-operation-expression")
+    private ExpectedUnaryOperationExpression unaryOperationExpression;
+    
+    @XmlElement(name = "xmlquery-projection")
+    private ExpectedXmlQueryAndExistsFunctionSegment expectedXmlQueryAndExistsFunctionSegment;
 }

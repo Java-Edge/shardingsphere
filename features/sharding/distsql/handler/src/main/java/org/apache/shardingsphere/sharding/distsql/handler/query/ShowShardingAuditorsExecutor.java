@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAuditorsStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingAuditorsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Arrays;
@@ -46,7 +47,7 @@ public final class ShowShardingAuditorsExecutor implements RQLExecutor<ShowShard
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         while (data.hasNext()) {
             Entry<String, AlgorithmConfiguration> entry = data.next();
-            result.add(new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), entry.getValue().getProps()));
+            result.add(new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), PropertiesConverter.convert(entry.getValue().getProps())));
         }
         return result;
     }
@@ -57,7 +58,7 @@ public final class ShowShardingAuditorsExecutor implements RQLExecutor<ShowShard
     }
     
     @Override
-    public String getType() {
-        return ShowShardingAuditorsStatement.class.getName();
+    public Class<ShowShardingAuditorsStatement> getType() {
+        return ShowShardingAuditorsStatement.class;
     }
 }

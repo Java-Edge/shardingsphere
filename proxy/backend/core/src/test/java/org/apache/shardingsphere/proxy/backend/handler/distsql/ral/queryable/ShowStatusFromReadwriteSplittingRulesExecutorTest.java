@@ -18,21 +18,21 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.spi.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.ZookeeperRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowStatusFromReadwriteSplittingRulesStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatusFromReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -58,8 +58,6 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 class ShowStatusFromReadwriteSplittingRulesExecutorTest {
     
-    private final ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
-    
     @Test
     void assertGetColumns() {
         ShowStatusFromReadwriteSplittingRulesExecutor executor = new ShowStatusFromReadwriteSplittingRulesExecutor();
@@ -72,13 +70,12 @@ class ShowStatusFromReadwriteSplittingRulesExecutorTest {
     
     @Test
     void assertGetRowsWithEmptyResult() {
-        when(connectionSession.getDatabaseName()).thenReturn("readwrite_db");
         ShowStatusFromReadwriteSplittingRulesExecutor executor = new ShowStatusFromReadwriteSplittingRulesExecutor();
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().databaseExists("readwrite_db")).thenReturn(true);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockMetaData(), connectionSession,
-                new ShowStatusFromReadwriteSplittingRulesStatement(new DatabaseSegment(1, 1, new IdentifierValue("readwrite_db")), null));
+        executor.setCurrentDatabase(mockMetaData().getDatabase("readwrite_db"));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(
+                new ShowStatusFromReadwriteSplittingRulesStatement(new DatabaseSegment(1, 1, new IdentifierValue("readwrite_db")), null), mockMetaData());
         assertTrue(actual.isEmpty());
     }
     
@@ -89,11 +86,12 @@ class ShowStatusFromReadwriteSplittingRulesExecutorTest {
     }
     
     private ShardingSphereMetaData mockMetaData() {
-        ShardingSphereDatabase database = new ShardingSphereDatabase("readwrite_db", mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS),
-                new ShardingSphereRuleMetaData(Collections.singletonList(mock(ShardingSphereRule.class))), Collections.emptyMap());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("readwrite_db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"),
+                mock(ResourceMetaData.class, RETURNS_DEEP_STUBS),
+                new RuleMetaData(Collections.singletonList(mock(ShardingSphereRule.class))), Collections.emptyMap());
         Map<String, ShardingSphereDatabase> databaseMap = new LinkedHashMap<>();
         databaseMap.put("readwrite_db", database);
-        return new ShardingSphereMetaData(databaseMap, mock(ShardingSphereResourceMetaData.class),
-                new ShardingSphereRuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+        return new ShardingSphereMetaData(databaseMap, mock(ResourceMetaData.class),
+                new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
     }
 }

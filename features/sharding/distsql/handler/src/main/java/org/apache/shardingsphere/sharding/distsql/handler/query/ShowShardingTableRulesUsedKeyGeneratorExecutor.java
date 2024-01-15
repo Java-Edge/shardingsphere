@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedKeyGeneratorStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableRulesUsedKeyGeneratorStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Arrays;
@@ -65,7 +65,7 @@ public final class ShowShardingTableRulesUsedKeyGeneratorExecutor implements RQL
     }
     
     @Override
-    public String getType() {
-        return ShowShardingTableRulesUsedKeyGeneratorStatement.class.getName();
+    public Class<ShowShardingTableRulesUsedKeyGeneratorStatement> getType() {
+        return ShowShardingTableRulesUsedKeyGeneratorStatement.class;
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.fixture;
 
-import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
+import org.apache.shardingsphere.distsql.handler.type.rdl.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 public final class FixtureRuleDefinitionCreateUpdater implements RuleDefinitionCreateUpdater<CreateFixtureRuleStatement, FixtureRuleConfiguration> {
@@ -41,7 +41,7 @@ public final class FixtureRuleDefinitionCreateUpdater implements RuleDefinitionC
     }
     
     @Override
-    public String getType() {
-        return CreateFixtureRuleStatement.class.getName();
+    public Class<CreateFixtureRuleStatement> getType() {
+        return CreateFixtureRuleStatement.class;
     }
 }

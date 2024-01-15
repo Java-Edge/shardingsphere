@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableNodesStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableNodesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
@@ -34,7 +34,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Result set for show sharding table nodes.
+ * Show sharding table nodes executor.
  */
 public final class ShowShardingTableNodesExecutor implements RQLExecutor<ShowShardingTableNodesStatement> {
     
@@ -70,7 +70,7 @@ public final class ShowShardingTableNodesExecutor implements RQLExecutor<ShowSha
     }
     
     @Override
-    public String getType() {
-        return ShowShardingTableNodesStatement.class.getName();
+    public Class<ShowShardingTableNodesStatement> getType() {
+        return ShowShardingTableNodesStatement.class;
     }
 }

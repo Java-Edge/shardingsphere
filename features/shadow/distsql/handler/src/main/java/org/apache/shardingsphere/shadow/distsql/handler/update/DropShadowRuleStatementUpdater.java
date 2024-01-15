@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
+import org.apache.shardingsphere.distsql.handler.type.rdl.RuleDefinitionDropUpdater;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
-import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowRuleStatement;
+import org.apache.shardingsphere.shadow.distsql.statement.DropShadowRuleStatement;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -112,7 +112,7 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
         currentRuleConfig.getTables().forEach((key, value) -> value.getDataSourceNames().removeIf(sqlStatement.getNames()::contains));
         currentRuleConfig.getTables().entrySet().removeIf(entry -> entry.getValue().getDataSourceNames().isEmpty());
         dropUnusedAlgorithm(currentRuleConfig);
-        return currentRuleConfig.getDataSources().isEmpty() || currentRuleConfig.getTables().isEmpty();
+        return currentRuleConfig.isEmpty();
     }
     
     private void dropRule(final ShadowRuleConfiguration currentRuleConfig, final String ruleName) {
@@ -124,7 +124,7 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
         findUnusedAlgorithms(currentRuleConfig).forEach(each -> currentRuleConfig.getShadowAlgorithms().remove(each));
     }
     
-    private static Collection<String> findUnusedAlgorithms(final ShadowRuleConfiguration currentRuleConfig) {
+    private Collection<String> findUnusedAlgorithms(final ShadowRuleConfiguration currentRuleConfig) {
         Collection<String> inUsedAlgorithms = currentRuleConfig.getTables().entrySet().stream().flatMap(entry -> entry.getValue().getShadowAlgorithmNames().stream()).collect(Collectors.toSet());
         if (null != currentRuleConfig.getDefaultShadowAlgorithmName()) {
             inUsedAlgorithms.add(currentRuleConfig.getDefaultShadowAlgorithmName());
@@ -138,7 +138,7 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
     }
     
     @Override
-    public String getType() {
-        return DropShadowRuleStatement.class.getName();
+    public Class<DropShadowRuleStatement> getType() {
+        return DropShadowRuleStatement.class;
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.engine.type.dql;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
@@ -35,6 +36,9 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -87,8 +91,8 @@ public abstract class BaseDQLE2EIT {
         }
     }
     
-    protected final void assertResultSet(final ResultSet actualResultSet, final ResultSet expectedResultSet) throws SQLException {
-        assertMetaData(actualResultSet.getMetaData(), expectedResultSet.getMetaData());
+    protected final void assertResultSet(final ResultSet actualResultSet, final ResultSet expectedResultSet, final AssertionTestParameter testParam) throws SQLException {
+        assertMetaData(actualResultSet.getMetaData(), expectedResultSet.getMetaData(), testParam);
         assertRows(actualResultSet, expectedResultSet);
     }
     
@@ -113,10 +117,15 @@ public abstract class BaseDQLE2EIT {
         return result;
     }
     
-    private void assertMetaData(final ResultSetMetaData actualResultSetMetaData, final ResultSetMetaData expectedResultSetMetaData) throws SQLException {
+    private void assertMetaData(final ResultSetMetaData actualResultSetMetaData, final ResultSetMetaData expectedResultSetMetaData, final AssertionTestParameter testParam) throws SQLException {
         assertThat(actualResultSetMetaData.getColumnCount(), is(expectedResultSetMetaData.getColumnCount()));
         for (int i = 0; i < actualResultSetMetaData.getColumnCount(); i++) {
-            assertThat(actualResultSetMetaData.getColumnLabel(i + 1).toLowerCase(), is(expectedResultSetMetaData.getColumnLabel(i + 1).toLowerCase()));
+            assertThat(actualResultSetMetaData.getColumnLabel(i + 1), is(expectedResultSetMetaData.getColumnLabel(i + 1)));
+            assertThat(actualResultSetMetaData.getColumnName(i + 1), is(expectedResultSetMetaData.getColumnName(i + 1)));
+            if ("jdbc".equals(testParam.getAdapter()) && "Cluster".equals(testParam.getMode())) {
+                // FIXME correct columnType with proxy adapter
+                assertThat(actualResultSetMetaData.getColumnType(i + 1), is(expectedResultSetMetaData.getColumnType(i + 1)));
+            }
         }
     }
     
@@ -190,6 +199,17 @@ public abstract class BaseDQLE2EIT {
                 Object expectedValue = expectedResultSet.getObject(i + 1);
                 if (actualValue instanceof Double || actualValue instanceof Float || actualValue instanceof BigDecimal) {
                     assertThat(Math.floor(Double.parseDouble(actualValue.toString())), is(Math.floor(Double.parseDouble(expectedValue.toString()))));
+                } else if (actualValue instanceof Timestamp && expectedValue instanceof LocalDateTime) {
+                    // TODO Since mysql 8.0.23, for the DATETIME type, the mysql driver returns the LocalDateTime type, but the proxy returns the Timestamp type.
+                    assertThat(((Timestamp) actualValue).toLocalDateTime(), is(expectedValue));
+                } else if (Types.TIMESTAMP == actualMetaData.getColumnType(i + 1) || Types.TIMESTAMP == expectedMetaData.getColumnType(i + 1)) {
+                    Object convertedActualValue = Types.TIMESTAMP == actualMetaData.getColumnType(i + 1)
+                            ? actualResultSet.getTimestamp(i + 1).toLocalDateTime().format(DateTimeFormatterFactory.getStandardFormatter())
+                            : actualValue;
+                    Object convertedExpectedValue = Types.TIMESTAMP == expectedMetaData.getColumnType(i + 1)
+                            ? expectedResultSet.getTimestamp(i + 1).toLocalDateTime().format(DateTimeFormatterFactory.getStandardFormatter())
+                            : actualValue;
+                    assertThat(String.valueOf(convertedActualValue), is(String.valueOf(convertedExpectedValue)));
                 } else {
                     assertThat(String.valueOf(actualValue), is(String.valueOf(expectedValue)));
                 }

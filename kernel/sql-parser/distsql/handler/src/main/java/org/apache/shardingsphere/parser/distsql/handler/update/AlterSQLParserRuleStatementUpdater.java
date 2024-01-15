@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.parser.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.ral.update.GlobalRuleRALUpdater;
+import org.apache.shardingsphere.distsql.handler.type.ral.update.GlobalRuleRALUpdater;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
-import org.apache.shardingsphere.parser.distsql.parser.segment.CacheOptionSegment;
-import org.apache.shardingsphere.parser.distsql.parser.statement.updatable.AlterSQLParserRuleStatement;
+import org.apache.shardingsphere.parser.distsql.segment.CacheOptionSegment;
+import org.apache.shardingsphere.parser.distsql.statement.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 
 /**
@@ -34,14 +34,13 @@ public final class AlterSQLParserRuleStatementUpdater implements GlobalRuleRALUp
     
     @Override
     public SQLParserRuleConfiguration buildAlteredRuleConfiguration(final SQLParserRuleConfiguration currentRuleConfig, final AlterSQLParserRuleStatement sqlStatement) {
-        boolean sqlCommentParseEnabled = null == sqlStatement.getSqlCommentParseEnabled() ? currentRuleConfig.isSqlCommentParseEnabled() : sqlStatement.getSqlCommentParseEnabled();
         CacheOption parseTreeCache = null == sqlStatement.getParseTreeCache()
                 ? currentRuleConfig.getParseTreeCache()
                 : createCacheOption(currentRuleConfig.getParseTreeCache(), sqlStatement.getParseTreeCache());
         CacheOption sqlStatementCache = null == sqlStatement.getSqlStatementCache()
                 ? currentRuleConfig.getSqlStatementCache()
                 : createCacheOption(currentRuleConfig.getSqlStatementCache(), sqlStatement.getSqlStatementCache());
-        return new SQLParserRuleConfiguration(sqlCommentParseEnabled, parseTreeCache, sqlStatementCache);
+        return new SQLParserRuleConfiguration(parseTreeCache, sqlStatementCache);
     }
     
     private CacheOption createCacheOption(final CacheOption cacheOption, final CacheOptionSegment segment) {
@@ -56,7 +55,7 @@ public final class AlterSQLParserRuleStatementUpdater implements GlobalRuleRALUp
     }
     
     @Override
-    public String getType() {
-        return AlterSQLParserRuleStatement.class.getName();
+    public Class<AlterSQLParserRuleStatement> getType() {
+        return AlterSQLParserRuleStatement.class;
     }
 }

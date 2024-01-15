@@ -17,14 +17,16 @@
 
 package org.apache.shardingsphere.globalclock.distsql.handler.query;
 
+import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
 import org.apache.shardingsphere.globalclock.core.rule.GlobalClockRule;
-import org.apache.shardingsphere.globalclock.core.rule.builder.DefaultGlobalClockRuleConfigurationBuilder;
+import org.apache.shardingsphere.globalclock.distsql.statement.queryable.ShowGlobalClockRuleStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.globalclock.distsql.parser.statement.queryable.ShowGlobalClockRuleStatement;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -44,14 +46,14 @@ class ShowGlobalClockRuleExecutorTest {
     void assertGlobalClockRule() {
         ShardingSphereMetaData metaData = mockMetaData();
         ShowGlobalClockRuleExecutor executor = new ShowGlobalClockRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowGlobalClockRuleStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowGlobalClockRuleStatement.class), metaData);
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("TSO"));
         assertThat(row.getCell(2), is("local"));
         assertThat(row.getCell(3), is("false"));
-        assertThat(row.getCell(4), is("{}"));
+        assertThat(row.getCell(4), is("{\"key\":\"value\"}"));
     }
     
     @Test
@@ -68,8 +70,9 @@ class ShowGlobalClockRuleExecutorTest {
     
     private ShardingSphereMetaData mockMetaData() {
         GlobalClockRule sqlParserRule = mock(GlobalClockRule.class);
-        when(sqlParserRule.getConfiguration()).thenReturn(new DefaultGlobalClockRuleConfigurationBuilder().build());
-        return new ShardingSphereMetaData(new LinkedHashMap<>(), mock(ShardingSphereResourceMetaData.class),
-                new ShardingSphereRuleMetaData(Collections.singleton(sqlParserRule)), new ConfigurationProperties(new Properties()));
+        GlobalClockRuleConfiguration globalClockRuleConfig = new GlobalClockRuleConfiguration("TSO", "local", false, PropertiesBuilder.build(new Property("key", "value")));
+        when(sqlParserRule.getConfiguration()).thenReturn(globalClockRuleConfig);
+        return new ShardingSphereMetaData(new LinkedHashMap<>(), mock(ResourceMetaData.class),
+                new RuleMetaData(Collections.singleton(sqlParserRule)), new ConfigurationProperties(new Properties()));
     }
 }

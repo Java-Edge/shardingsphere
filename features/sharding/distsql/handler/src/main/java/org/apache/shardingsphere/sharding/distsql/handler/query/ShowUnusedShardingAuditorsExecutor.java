@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.distsql.handler.type.rql.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.props.PropertiesConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowUnusedShardingAuditorsStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowUnusedShardingAuditorsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Arrays;
@@ -50,7 +51,7 @@ public final class ShowUnusedShardingAuditorsExecutor implements RQLExecutor<Sho
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         for (Entry<String, AlgorithmConfiguration> entry : shardingRuleConfig.getAuditors().entrySet()) {
             if (!inUsedAuditors.contains(entry.getKey())) {
-                result.add(new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), entry.getValue().getProps().toString()));
+                result.add(new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), PropertiesConverter.convert(entry.getValue().getProps())));
             }
         }
         return result;
@@ -73,7 +74,7 @@ public final class ShowUnusedShardingAuditorsExecutor implements RQLExecutor<Sho
     }
     
     @Override
-    public String getType() {
-        return ShowUnusedShardingAuditorsStatement.class.getName();
+    public Class<ShowUnusedShardingAuditorsStatement> getType() {
+        return ShowUnusedShardingAuditorsStatement.class;
     }
 }

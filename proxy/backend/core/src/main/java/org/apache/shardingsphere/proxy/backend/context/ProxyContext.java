@@ -21,10 +21,11 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource;
 
@@ -80,7 +81,8 @@ public final class ProxyContext {
      * @return got database
      */
     public ShardingSphereDatabase getDatabase(final String name) {
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(name) && contextManager.getMetaDataContexts().getMetaData().containsDatabase(name), NoDatabaseSelectedException::new);
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(name), NoDatabaseSelectedException::new);
+        ShardingSpherePreconditions.checkState(contextManager.getMetaDataContexts().getMetaData().containsDatabase(name), () -> new UnknownDatabaseException(name));
         return contextManager.getMetaDataContexts().getMetaData().getDatabase(name);
     }
     

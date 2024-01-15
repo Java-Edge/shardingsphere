@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 
-import org.apache.shardingsphere.distsql.handler.rul.RULExecutor;
-import org.apache.shardingsphere.distsql.parser.statement.rul.RULStatement;
+import org.apache.shardingsphere.distsql.handler.type.rul.RULExecutor;
+import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.executor.ConnectionSessionRequiredRULExecutor;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
@@ -48,9 +48,10 @@ public final class SQLRULBackendHandler<T extends RULStatement> extends RULBacke
     
     private MergedResult mergedResult;
     
+    @SuppressWarnings("unchecked")
     @Override
     public ResponseHeader execute() throws SQLException {
-        RULExecutor<T> executor = TypedSPILoader.getService(RULExecutor.class, getSqlStatement().getClass().getName());
+        RULExecutor<T> executor = TypedSPILoader.getService(RULExecutor.class, getSqlStatement().getClass());
         queryHeaders = createQueryHeader(executor);
         mergedResult = createMergedResult(executor);
         return new QueryResponseHeader(queryHeaders);
@@ -61,11 +62,8 @@ public final class SQLRULBackendHandler<T extends RULStatement> extends RULBacke
     }
     
     private MergedResult createMergedResult(final RULExecutor<T> executor) throws SQLException {
-        if (executor instanceof ConnectionSessionRequiredRULExecutor) {
-            ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
-            return new LocalDataMergedResult(((ConnectionSessionRequiredRULExecutor<T>) executor).getRows(metaData, getConnectionSession(), getSqlStatement()));
-        }
-        return new LocalDataMergedResult(executor.getRows(getSqlStatement()));
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
+        return new LocalDataMergedResult(((ConnectionSessionRequiredRULExecutor<T>) executor).getRows(metaData, getConnectionSession(), getSqlStatement()));
     }
     
     @Override
