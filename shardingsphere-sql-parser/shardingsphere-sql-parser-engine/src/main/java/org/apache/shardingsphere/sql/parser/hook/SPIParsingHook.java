@@ -24,6 +24,7 @@ import java.util.Collection;
 
 /**
  * Parsing hook for SPI.
+ * 一种容器类，将所有同类型的 Hook 通过 SPI 进行实例化并统一调用
  *
  * @author zhangliang
  */

@@ -46,9 +46,11 @@ public final class SQLParseEngine {
      * @return SQL statement
      */
     public SQLStatement parse(final String sql, final boolean useCache) {
+        // 基于 Hook 机制进行监控和跟踪
         ParsingHook parsingHook = new SPIParsingHook();
         parsingHook.start(sql);
         try {
+            // 完成 SQL 的解析,并返回一个 SQLStatement 对象
             SQLStatement result = parse0(sql, useCache);
             parsingHook.finishSuccess(result);
             return result;

@@ -103,19 +103,28 @@ public final class SnowflakeShardingKeyGenerator implements ShardingKeyGenerator
     
     @Override
     public synchronized Comparable<?> generateKey() {
+        // 获取当前时间戳
         long currentMilliseconds = timeService.getCurrentMillis();
+        // 如出现时钟回拨，抛异常或时钟等待
         if (waitTolerateTimeDifferenceIfNeed(currentMilliseconds)) {
             currentMilliseconds = timeService.getCurrentMillis();
         }
+        // 如果上次的生成时间与本次的是同一毫秒
         if (lastMilliseconds == currentMilliseconds) {
+            // 保证始终在4096这个范围，避免你自己传递的sequence超过4096
             if (0L == (sequence = (sequence + 1) & SEQUENCE_MASK)) {
+                // 如果位运算结果为0，则需等待下一个毫秒继续生成
                 currentMilliseconds = waitUntilNextTime(currentMilliseconds);
             }
         } else {
+            // 如果不是，则生成新的sequence
             vibrateSequenceOffset();
             sequence = sequenceOffset;
         }
         lastMilliseconds = currentMilliseconds;
+
+        // 先将当前时间戳左移放到完成41个bit，然后将工作进程为左移到10个bit，再将序号为放到最后的12个bit
+        // 最后拼接起来成一个64 bit的二进制数字
         return ((currentMilliseconds - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (getWorkerId() << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
     }
     

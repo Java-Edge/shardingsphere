@@ -25,25 +25,25 @@ import java.util.Properties;
  * @author zhangliang
  */
 public interface TypeBasedSPI {
-    
-    /**
-     * Get algorithm type.
-     * 
-     * @return type
-     */
-    String getType();
-    
-    /**
-     * Get properties.
-     * 
-     * @return properties of algorithm
-     */
-    Properties getProperties();
-    
-    /**
-     * Set properties.
-     * 
-     * @param properties properties of algorithm
-     */
-    void setProperties(Properties properties);
+
+ /**
+  * Get algorithm type.
+  *
+  * @return type
+  */
+ String getType();
+
+ /**
+  * Get properties.
+  *
+  * @return properties of algorithm
+  */
+ Properties getProperties();
+
+ /**
+  * Set properties.
+  *
+  * @param properties properties of algorithm
+  */
+ void setProperties(Properties properties);
 }

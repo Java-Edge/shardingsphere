@@ -375,6 +375,7 @@ public class ShardingRule implements BaseRule {
         if (!tableRule.isPresent()) {
             throw new ShardingConfigurationException("Cannot find strategy for generate keys.");
         }
+        // 从TableRule中获取ShardingKeyGenerator，并生成分布式主键
         ShardingKeyGenerator shardingKeyGenerator = null == tableRule.get().getShardingKeyGenerator() ? defaultShardingKeyGenerator : tableRule.get().getShardingKeyGenerator();
         return shardingKeyGenerator.generateKey();
     }

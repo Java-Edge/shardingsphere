@@ -60,10 +60,12 @@ public final class GeneratedKey {
      * @return generate key
      */
     public static Optional<GeneratedKey> getGenerateKey(final ShardingRule shardingRule, final TableMetas tableMetas, final List<Object> parameters, final InsertStatement insertStatement) {
+        // 找到自增长列
         Optional<String> generateKeyColumnName = shardingRule.findGenerateKeyColumnName(insertStatement.getTable().getTableName());
         if (!generateKeyColumnName.isPresent()) {
             return Optional.absent();
         }
+        // 判断自增长类是否已生成主键值
         return Optional.of(containsGenerateKey(tableMetas, insertStatement, generateKeyColumnName.get())
                 ? findGeneratedKey(tableMetas, parameters, insertStatement, generateKeyColumnName.get()) : createGeneratedKey(shardingRule, insertStatement, generateKeyColumnName.get()));
     }
@@ -99,7 +101,8 @@ public final class GeneratedKey {
                 ? tableMetas.getAllColumnNames(insertStatement.getTable().getTableName()).indexOf(generateKeyColumnName) : insertStatement.getColumnNames().indexOf(generateKeyColumnName);
     }
     
-    private static GeneratedKey createGeneratedKey(final ShardingRule shardingRule, final InsertStatement insertStatement, final String generateKeyColumnName) {
+    private static GeneratedKey createGeneratedKey(final ShardingRule shardingRule, final InsertStatement insertStatement,
+                                                   final String generateKeyColumnName) {
         GeneratedKey result = new GeneratedKey(generateKeyColumnName, true);
         for (int i = 0; i < insertStatement.getValueListCount(); i++) {
             result.getGeneratedValues().add(shardingRule.generateKey(insertStatement.getTable().getTableName()));

@@ -39,6 +39,7 @@ public abstract class TypeBasedSPIServiceLoader<T extends TypeBasedSPI> {
     
     /**
      * Create new instance for type based SPI.
+     * 基于类型通过SPI创建实例
      * 
      * @param type SPI type
      * @param props SPI properties
@@ -56,6 +57,7 @@ public abstract class TypeBasedSPIServiceLoader<T extends TypeBasedSPI> {
     
     /**
      * Create new service by default SPI type.
+     * 基于默认类型通过SPI创建实例
      *
      * @return type based SPI instance
      */
@@ -64,7 +66,8 @@ public abstract class TypeBasedSPIServiceLoader<T extends TypeBasedSPI> {
         result.setProperties(new Properties());
         return result;
     }
-    
+
+    //使用NewInstanceServiceLoader获取实例类列表，并根据类型做过滤
     private Collection<T> loadTypeBasedServices(final String type) {
         return Collections2.filter(NewInstanceServiceLoader.newServiceInstances(classType), new Predicate<T>() {
             

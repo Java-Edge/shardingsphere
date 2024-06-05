@@ -71,7 +71,9 @@ import java.util.Map;
 @ComponentScan("org.apache.shardingsphere.spring.boot.converter")
 @EnableConfigurationProperties({
         SpringBootShardingRuleConfigurationProperties.class, 
-        SpringBootMasterSlaveRuleConfigurationProperties.class, SpringBootEncryptRuleConfigurationProperties.class, SpringBootPropertiesConfigurationProperties.class})
+        SpringBootMasterSlaveRuleConfigurationProperties.class,
+        SpringBootEncryptRuleConfigurationProperties.class,
+        SpringBootPropertiesConfigurationProperties.class})
 @ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
 @RequiredArgsConstructor
