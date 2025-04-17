@@ -39,6 +39,7 @@ public final class XAConnectionFactory {
     
     /**
      * Create XA connection from normal connection.
+     * 基于普通 Connection 创建 XAConnection
      *
      * @param databaseType database type
      * @param connection normal connection
@@ -46,8 +47,10 @@ public final class XAConnectionFactory {
      * @return XA connection
      */
     public static XAConnection createXAConnection(final DatabaseType databaseType, final XADataSource xaDataSource, final Connection connection) {
+        // 根据数据库类型分别构建了对应的 ConnectionWrapper
         switch (databaseType.getName()) {
             case "MySQL":
+                // 返回 XAConnection
                 return new MySQLXAConnectionWrapper().wrap(xaDataSource, connection);
             case "MariaDB":
                 return new MariaDBXAConnectionWrapper().wrap(xaDataSource, connection);

@@ -46,11 +46,14 @@ import java.util.Map.Entry;
  * @author panjuan
  */
 public final class EncryptRule implements BaseRule {
-    
+
+    // 加解密器
     private final Map<String, ShardingEncryptor> encryptors = new LinkedHashMap<>();
-    
+
+    // 脱敏数据表
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
-    
+
+    // 脱敏规则配置
     @Getter
     private EncryptRuleConfiguration ruleConfiguration;
     

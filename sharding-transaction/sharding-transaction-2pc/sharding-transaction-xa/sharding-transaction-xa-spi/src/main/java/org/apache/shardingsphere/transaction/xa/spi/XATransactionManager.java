@@ -30,11 +30,13 @@ public interface XATransactionManager extends AutoCloseable {
     
     /**
      * Initialize XA transaction manager.
+     * 初始化 XA 事务管理器
      */
     void init();
     
     /**
      * Register recovery resource.
+     * 注册事务恢复资源
      *
      * @param dataSourceName data source name
      * @param xaDataSource XA data source
@@ -43,6 +45,7 @@ public interface XATransactionManager extends AutoCloseable {
     
     /**
      * Remove recovery resource.
+     * 移除事务恢复资源
      *
      * @param dataSourceName data source name
      * @param xaDataSource   XA data source
@@ -51,6 +54,7 @@ public interface XATransactionManager extends AutoCloseable {
     
     /**
      * Enlist single XA resource.
+     * 嵌入一个 SingleXAResource 资源
      * 
      * @param singleXAResource single XA resource
      */
@@ -58,6 +62,7 @@ public interface XATransactionManager extends AutoCloseable {
     
     /**
      * Get transaction manager.
+     * 返回 TransactionManager
      * 
      * @return transaction manager
      */

@@ -47,7 +47,7 @@ import java.util.Map;
 public final class SeataATShardingTransactionManager implements ShardingTransactionManager {
     
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
-    
+    // 根据 seata.conf 创建配置对象
     private final FileConfiguration configuration = new FileConfiguration("seata.conf");
     
     @Override
